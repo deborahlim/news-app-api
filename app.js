@@ -1,21 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-// const { MongoClient, ServerApiVersion } = require("mongodb");
 
+const userRouter = require("./routes/userRoutes");
 // start express app
-let app = express();
+const app = express();
 
 // middlewares
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 app.use(express.json());
-app.use(cors);
+app.use(cors());
 
 // routes
-app.get("/", (req, res, next) => {
-  console.log("Hello World");
-});
+app.use("/api/users", userRouter);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the News App API")
+})
 
 module.exports = app;

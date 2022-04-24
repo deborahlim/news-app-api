@@ -28,16 +28,6 @@ const userSchema = new mongoose.Schema({
       minlength: 8,
       select: false
   },
-  passwordConfirm: {
-      type: String,
-      required: [true, "Please confirm your password"],
-      validate: {
-        //   only works on create and save
-        validator: function(el) {
-            return el === this.password
-        }
-      }
-  }
 });
 
 const User = mongoose.model("User", userSchema);

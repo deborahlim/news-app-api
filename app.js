@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 
+const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
+const AppError = require("./utils/appError");
 // start express app
 const app = express();
 
@@ -16,8 +18,11 @@ app.use(cors());
 // routes
 app.use("/api/users", userRouter);
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the News App API")
-})
+// to deal with unhandled routes, should be the last middleware
+app.all("*", (req, res, next) => {  
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;

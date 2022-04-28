@@ -18,10 +18,6 @@ const message =  `Invalid Input Entered. ${validationErrors}`;
 return new AppError(message, 400);
 };
 
-process.on("unhandledRejection", () => {});
-
-process.on("uncaughtException", () => {});
-
 const sendErrorDev = (err, res) => {
   console.log(err);
   res.status(err.statusCode).json({

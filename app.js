@@ -17,12 +17,10 @@ app.use(cors());
 
 // routes
 app.use("/api/users", userRouter);
-
+app.use(globalErrorHandler);
 // to deal with unhandled routes, should be the last middleware
 app.all("*", (req, res, next) => {  
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
-
-app.use(globalErrorHandler);
 
 module.exports = app;

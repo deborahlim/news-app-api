@@ -37,7 +37,8 @@ exports.findUserById = catchAsync(async (req, res, next) => {
   if (!user) {
     // need to put return keyword here so that we do not move on to the next line and send two responses
     // go straight to global error handling middleware
-    return next(new AppError("No user found with that ID", 404));
+    const noUserFoundError = new AppError("No user found with that ID", 404);
+    return next(noUserFoundError);
   }
   res.status(200).json({
     status: "success",
@@ -48,14 +49,13 @@ exports.findUserById = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUserById = catchAsync(async (req, res, next) => {
-
   let updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true, // true to return the modified document rather than the original. defaults to false
     runValidators: true, // if true runs update validators which validate the update operation against the model's schema
   });
 
-  if(!updatedUser) {
-    return next(new AppError("No user found by that ID", 404))
+  if (!updatedUser) {
+    return next(new AppError("No user found by that ID", 404));
   }
   res.status(200).json({
     status: "success",
@@ -67,7 +67,7 @@ exports.updateUserById = catchAsync(async (req, res, next) => {
 
 exports.deleteUserById = catchAsync(async (req, res, next) => {
   const deletedUser = await User.findByIdAndDelete(req.params.id);
-  if(!deletedUser) {
+  if (!deletedUser) {
     return next(new AppError("No user found with that ID", 404));
   }
   res.status(204).json({

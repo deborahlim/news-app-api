@@ -1,6 +1,14 @@
 // loads environment variables from a .env file into process.env
 const dotenv = require("dotenv");
+const { download } = require("express/lib/response");
 const mongoose = require("mongoose");
+
+process.on("uncaughtException", () => {
+  console.log("UNCAUGHT EXCEPTION SHUTTING DOWN...");
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 dotenv.config();
 const app = require("./app");
 
@@ -20,3 +28,13 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+
+process.on("unhandledRejection", () => {
+  console.log("UNHANDLED REJECTION! SHUTTING DOWN...");
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  })
+});
+
+

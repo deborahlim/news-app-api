@@ -19,18 +19,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
       users: users,
     },
   });
-});
-
-exports.createUser = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      user: newUser,
-    },
-  });
-});
+})
 
 exports.findUserById = catchAsync(async (req, res, next) => {
   let user = await User.findById(req.params.id);

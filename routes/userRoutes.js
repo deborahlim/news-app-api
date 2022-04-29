@@ -1,10 +1,18 @@
 const express = require("express");
 const userController = require("../controllers/userController");
-
+const authController = require("../controllers/authController");
 const router = express.Router();
 
-router.route("/").get(userController.getAllUsers).post(userController.createUser);
+router.route("/signup").post(authController.signup);
 
-router.route("/:id").get(userController.findUserById).patch(userController.updateUserById).delete(userController.deleteUserById);
+router.route("/login").post(authController.login);
 
-module.exports = router; 
+router.route("/").get(userController.getAllUsers);
+
+router
+  .route("/:id")
+  .get(userController.findUserById)
+  .patch(userController.updateUserById)
+  .delete(userController.deleteUserById);
+
+module.exports = router;

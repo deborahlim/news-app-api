@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION SHUTTING DOWN...");
-  console.log(err.name, err.message);
+  console.log(err.name, err.message, err.stack);
   process.exit(1);
 });
 
@@ -39,7 +39,7 @@ const server = app.listen(port, () => {
 // central place to handle all unhandled promised rejection as a last safety net
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! SHUTTING DOWN...");
-  console.log(err.name, err.message);
+  console.log(err.name, err.message, err.stack);
   // shut down gracefully by closing the server first before shutting down app
   // process.exit() will immediately abort all the requests that are currently still running or pending
   // gives the server time to finish all the requests that are pending or being handled

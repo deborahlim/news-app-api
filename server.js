@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 // uncaught exceptions will have nothing to do with the server, 
 // so dont need to wait for server to close before shutting down application
 
-process.on("uncaughtException", () => {
+process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION SHUTTING DOWN...");
   console.log(err.name, err.message);
   process.exit(1);
@@ -37,7 +37,7 @@ const server = app.listen(port, () => {
 // unhandled promise rejection; somewhere there was a promise that was rejected but was not handled
 // subscribe to the unhandledRejection event that will be emitted by the process object when there is a unhandled promise rejection
 // central place to handle all unhandled promised rejection as a last safety net
-process.on("unhandledRejection", () => {
+process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! SHUTTING DOWN...");
   console.log(err.name, err.message);
   // shut down gracefully by closing the server first before shutting down app

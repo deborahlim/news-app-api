@@ -56,6 +56,16 @@ userSchema.pre("save", async function(next) {
   next();
 })
 
+// instance method is available on all documents of a certain collection
+// this points to the current document; need to pass in the hashedPassword too bcos password is not available on the document
+userSchema.methods.correctPassword = async function(candidatePassword, hashedUserPassword) {
+  // candidatePassword = password that the user passes to req.body
+  // userPassword = Data to be compared to
+  // returns promise if callback is not specified
+  // return true if password is the same and false if not
+  return await bcrypt.compare(candidatePassword, hashedUserPassword);
+}
+
 
 
 

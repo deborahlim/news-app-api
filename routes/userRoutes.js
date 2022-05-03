@@ -7,12 +7,12 @@ router.route("/signup").post(authController.signup);
 
 router.route("/login").post(authController.login);
 
-router.route("/").get(userController.getAllUsers);
+router.route("/").get(userController.getAllUsers).delete(userController.deleteAllUsers);
 
 router
   .route("/:id")
   .get(userController.findUserById)
   .patch(userController.updateUserById)
-  .delete(userController.deleteUserById);
+  .delete(userController.deleteUserById)
 
 module.exports = router;

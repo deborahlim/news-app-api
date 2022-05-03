@@ -19,7 +19,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
       users: users,
     },
   });
-})
+});
 
 exports.findUserById = catchAsync(async (req, res, next) => {
   let user = await User.findById(req.params.id);
@@ -62,6 +62,20 @@ exports.deleteUserById = catchAsync(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: deletedUser,
+  });
+});
+
+exports.deleteAllUsers = catchAsync(async (req, res, next) => {
+  const deletedUsers = await User.deleteMany({
+    role: "user",
+  });
+  // returns an object with the property deletedCount containing the number of documents deleted
+  if (!deletedUsers.deletedCount === 0) {
+    return next(new AppError("Unable to delete all users", 400));
+  }
+  res.status(204).json({
+    status: "success",
+    data: deletedUsers,
   });
 });
 

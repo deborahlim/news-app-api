@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: [true, "Please provide a password"],
       minlength: 8,
+      // sets default select() behavior for this path, set to true if this path should always be selected
+      // set to false if it should be excluded by default
+      // can be overridden at the query level
       select: false
   },
   passwordConfirm: {

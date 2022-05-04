@@ -24,9 +24,10 @@ exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
+    // role: req.body.role,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt
+    passwordChangedAt: req.body.passwordChangedAt,
   });
   // so that password field is not sent back in the response
   const user = await User.findById(newUser._id);
@@ -118,16 +119,29 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   // Check if user changed password after token was issued
-  let isChanged = currentUser.changedPasswordAfter(decodedTokenPayload.iat)
+  let isChanged = currentUser.changedPasswordAfter(decodedTokenPayload.iat);
   if (isChanged) {
-    console.log(isChanged)
+    console.log(isChanged);
     return next(
       new AppError("User recently changed password! Please log in again", 401)
     );
   }
 
   // grant access to protected route
-  // req obj is available from middleware to middleware 
+  // req obj is available from middleware to middleware
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    console.log(req.user);
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("You do not have permission to perform this action", 403)
+      );
+    }
+
+    next();
+  };
+};

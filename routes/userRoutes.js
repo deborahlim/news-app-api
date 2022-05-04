@@ -7,12 +7,15 @@ router.route("/signup").post(authController.signup);
 
 router.route("/login").post(authController.login);
 
-router.route("/").get(userController.getAllUsers).delete(userController.deleteAllUsers);
+router
+  .route("/")
+  .get(authController.protect, userController.getAllUsers)
+  .delete(authController.protect, userController.deleteAllUsers);
 
 router
   .route("/:id")
-  .get(userController.findUserById)
-  .patch(userController.updateUserById)
-  .delete(userController.deleteUserById)
+  .get(authController.protect, userController.findUserById)
+  .patch(authController.protect, userController.updateUserById)
+  .delete(userController.deleteUserById);
 
 module.exports = router;

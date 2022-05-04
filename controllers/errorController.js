@@ -1,5 +1,8 @@
 const AppError = require("../utils/appError");
-
+const handleJWTError = () =>
+  new AppError("Invalid Token. Please log in again!", 401);
+const handleJWTExpiredError = () =>
+  new AppError("Your Token has expired! Please log in again.", 401);
 const handleCastErrorDB = (err) => {
   const message = `Invalid User ${err.path}: ${err.value}`;
   return new AppError(message, 400);
@@ -11,11 +14,13 @@ const handleDuplicateFields = () => {
 };
 
 const handleMongooseValidationErrors = (err) => {
-  const validationErrors = Object.values(err.errors).map(el => {
-    return el.message;
-  }).join(". ")
-const message =  `Invalid Input Entered. ${validationErrors}`;
-return new AppError(message, 400);
+  const validationErrors = Object.values(err.errors)
+    .map((el) => {
+      return el.message;
+    })
+    .join(". ");
+  const message = `Invalid Input Entered. ${validationErrors}`;
+  return new AppError(message, 400);
 };
 
 const sendErrorDev = (err, res) => {
@@ -58,12 +63,20 @@ module.exports = (err, req, res, next) => {
     let error = Object.create(err);
     if (error.kind === "ObjectId") {
       error = handleCastErrorDB(error);
-    } else if (error.code === 11000) {
+    }
+    if (error.code === 11000) {
       error = handleDuplicateFields();
     }
-    else if (error.name === "ValidationError") {
+    if (error.name === "ValidationError") {
       error = handleMongooseValidationErrors(err);
     }
+    if (error.name === "JsonWebTokenError") {
+      error = handleJWTError();
+    }
+    if (error.name === "TokenExpirationError") {
+      error = handleJWTExpiredError();
+    }
+
     sendErrorProd(error, res);
   }
 };

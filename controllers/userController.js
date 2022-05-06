@@ -9,6 +9,16 @@ const AppError = require("../utils/appError");
 // with the catch method available on all promises
 // the catch method will pass the error into the next function, and the error will end up in the global handling middleware
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) {
+      newObj[el] = obj[el];
+    }
+  });
+  return newObj;
+};
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
   // send response
@@ -17,6 +27,32 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     results: users.length,
     data: {
       users: users,
+    },
+  });
+});
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // Create error if user POSTs password data
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        "This route is not for password updates. Please use /updatePassword"
+      )
+    );
+  }
+  // Filtered out unwanted field names that are not allowed to be updated
+  const filteredBody = filterObj(re.body, "name", "email");
+
+  // Update user document
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
     },
   });
 });

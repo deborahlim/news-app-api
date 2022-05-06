@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {
@@ -60,11 +65,19 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.pre("save", async function (next) {
-  if(!this.isModified("password") || this.isNew) return next();
-  
+  if (!this.isModified("password") || this.isNew) return next();
+
   this.passwordChangedAt = Date.now();
   next();
-})
+});
+
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({
+    active: { $ne: false },
+  });
+  next();
+});
 
 // instance method is available on all documents of a certain collection
 // this points to the current document; need to pass in the hashedPassword too bcos password is not available on the document

@@ -1,6 +1,5 @@
 // loads environment variables from a .env file into process.env
 const dotenv = require("dotenv");
-const { download } = require("express/lib/response");
 const mongoose = require("mongoose");
 
 // handle synchronous code; uncaught exceptions

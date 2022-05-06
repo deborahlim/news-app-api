@@ -5,8 +5,6 @@ const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const User = require("../models/userModel");
-const { is } = require("express/lib/request");
-const req = require("express/lib/request");
 
 const signToken = (id) => {
   return jwt.sign(
@@ -18,6 +16,20 @@ const signToken = (id) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     }
   );
+};
+
+const createSendToken = (user, statusCode, res) => {
+  // only want to store the new user's id in the payload
+  const token = signToken(user._id);
+
+  // send the token back to the client with the user data
+  res.status(statusCode).json({
+    status: "success",
+    token: token,
+    data: {
+      user: user,
+    },
+  });
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -33,17 +45,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // so that password field is not sent back in the response
   const user = await User.findById(newUser._id);
 
-  // only want to store the new user's id in the payload
-  const token = signToken(newUser._id);
-
-  // send the token back to the client with the user data
-  res.status(201).json({
-    status: "success",
-    token: token,
-    data: {
-      user: user,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -75,11 +77,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // if all good, send token to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createSendToken(user, 200, res);
 });
 
 // middleware to protect routes
@@ -213,12 +211,24 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
   await user.save();
   // log the user in, send JWT
-  const token = signToken(user._id);
-  res.status(201).json({
-    status: "success",
-    token: token,
-    data: {
-      user: user,
-    },
-  });
+  createSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // get user from the collection
+  const user = await User.findById(req.user.id).select("+password");
+  // check if posted password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(
+      new AppError("Your provided current password is not correct", 403)
+    );
+  }
+  // if so, update the password
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // log user in, send JWT
+  createSendToken(user, 201, res);
 });

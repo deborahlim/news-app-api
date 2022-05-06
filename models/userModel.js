@@ -59,6 +59,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("save", async function (next) {
+  if(!this.isModified("password") || this.isNew) return next();
+  
+  this.passwordChangedAt = Date.now();
+  next();
+})
+
 // instance method is available on all documents of a certain collection
 // this points to the current document; need to pass in the hashedPassword too bcos password is not available on the document
 userSchema.methods.correctPassword = async function (

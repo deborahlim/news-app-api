@@ -21,6 +21,17 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   // only want to store the new user's id in the payload
   const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    httpOnly: true
+  }
+
+  if(process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
+
+  // remove password from output
+  user.password = undefined;
 
   // send the token back to the client with the user data
   res.status(statusCode).json({
@@ -42,8 +53,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
   });
-  // so that password field is not sent back in the response
-  const user = await User.findById(newUser._id);
 
   createSendToken(newUser, 201, res);
 });

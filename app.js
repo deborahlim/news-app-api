@@ -13,6 +13,7 @@ const AppError = require("./utils/appError");
 // start express app
 const app = express();
 
+app.use(cors());
 // middlewares
 // set security HTTP headers
 app.use(helmet());
@@ -42,8 +43,6 @@ app.use(xss());
 
 // Prevent parameter pollution
 app.use(hpp());
-
-app.use(cors());
 
 // routes
 app.use("/api/users", userRouter);

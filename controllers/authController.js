@@ -53,7 +53,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
   });
-
+  
   createSendToken(newUser, 201, res);
 });
 

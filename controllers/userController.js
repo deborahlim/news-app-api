@@ -19,6 +19,11 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+exports.getMe = catchAsync(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+});
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
   // send response
@@ -41,7 +46,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
   }
   // Filtered out unwanted field names that are not allowed to be updated
-  const filteredBody = filterObj(re.body, "name", "email");
+  const filteredBody = filterObj(res.body, "name", "email");
 
   // Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -67,7 +72,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.findUserById = catchAsync(async (req, res, next) => {
+exports.getUser = catchAsync(async (req, res, next) => {
   let user = await User.findById(req.params.id);
   if (!user) {
     // need to put return keyword here so that we do not move on to the next line and send two responses

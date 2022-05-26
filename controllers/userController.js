@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+
+const factory = require("../controllers/handlerFactory");
 // catch async errors with try catch blocks is not ideal
 // alternatively, can wrap async function inside of a wrapper function
 // catchAsync will return an anonymous function which will be assigned to get all users
@@ -24,18 +26,6 @@ exports.getMe = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  // send response
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users: users,
-    },
-  });
-});
-
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -46,7 +36,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
   }
   // Filtered out unwanted field names that are not allowed to be updated
-  const filteredBody = filterObj(res.body, "name", "email");
+  const filteredBody = filterObj(req.body, "name", "email");
 
   // Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -72,49 +62,13 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = catchAsync(async (req, res, next) => {
-  let user = await User.findById(req.params.id);
-  if (!user) {
-    // need to put return keyword here so that we do not move on to the next line and send two responses
-    // go straight to global error handling middleware
-    const noUserFoundError = new AppError("No user found with that ID", 404);
-    return next(noUserFoundError);
-  }
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: user,
-    },
-  });
-});
+exports.getAllUsers = factory.getAll = factory.getAll(User);
 
-exports.updateUserById = catchAsync(async (req, res, next) => {
-  let updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // true to return the modified document rather than the original. defaults to false
-    runValidators: true, // if true runs update validators which validate the update operation against the model's schema
-  });
+exports.getUser = factory.getOne(User);
 
-  if (!updatedUser) {
-    return next(new AppError("No user found by that ID", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: updatedUser,
-    },
-  });
-});
+exports.updateUserById = factory.updateOne(User);
 
-exports.deleteUserById = catchAsync(async (req, res, next) => {
-  const deletedUser = await User.findByIdAndDelete(req.params.id);
-  if (!deletedUser) {
-    return next(new AppError("No user found with that ID", 404));
-  }
-  res.status(204).json({
-    status: "success",
-    data: deletedUser,
-  });
-});
+exports.deleteUserById = factory.deleteOne(User);
 
 exports.deleteAllUsers = catchAsync(async (req, res, next) => {
   const deletedUsers = await User.deleteMany({

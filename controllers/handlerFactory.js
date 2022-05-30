@@ -8,9 +8,7 @@ exports.getAll = (Model) =>
     res.status(200).json({
       status: "success",
       results: collection.length,
-      data: {
-        data: collection,
-      },
+      data: collection,
     });
   });
 
@@ -28,9 +26,7 @@ exports.getOne = (Model) =>
     }
     res.status(200).json({
       status: "success",
-      data: {
-        data: doc,
-      },
+      data: doc,
     });
   });
 
@@ -46,9 +42,7 @@ exports.updateOne = (Model) =>
     }
     res.status(200).json({
       status: "success",
-      data: {
-        data: doc,
-      },
+      data: doc,
     });
   });
 

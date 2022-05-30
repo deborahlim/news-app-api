@@ -105,7 +105,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  console.log(token);
+  console.log("TOKEN", token);
 
   // Verify Token function is an asynchronous function
   // requires a callback function which will run once the verification is complete

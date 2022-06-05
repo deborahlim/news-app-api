@@ -51,12 +51,21 @@ const userSchema = new mongoose.Schema({
   },
   country: {
     type: String,
-    default: "sg"
+    default: "sg",
   },
   language: {
     type: String,
-    default: "en"
-  }
+    default: "en",
+  },
+  savedTopics: {
+    type: Array,
+    validate: [
+      (el) => {
+        el.length <= 10;
+      },
+      "You have exceeded the maximum number of saved topics. Please delete one or more topics.",
+    ],
+  },
 });
 
 userSchema.pre("save", async function (next) {

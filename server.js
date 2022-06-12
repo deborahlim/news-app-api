@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // handle synchronous code; uncaught exceptions
 // should be at the top before any code executes
-// uncaught exceptions will have nothing to do with the server, 
+// uncaught exceptions will have nothing to do with the server,
 // so dont need to wait for server to close before shutting down application
 
 process.on("uncaughtException", (err) => {
@@ -21,9 +21,8 @@ const DB = process.env.MONGO_URI.replace(
   process.env.DATABASE_PASSWORD
 );
 
-
-mongoose.connect(DB).then((con) => {
-//   console.log(con.connections);
+mongoose.connect(DB, { useNewUrlParser: true }).then((con) => {
+  //   console.log(con.connections);
   console.log("DB Connected");
 });
 
@@ -48,7 +47,5 @@ process.on("unhandledRejection", (err) => {
     // 1 stands for uncaught exception
     process.exit(1);
     // will also restart application in real world
-  })
+  });
 });
-
-

@@ -6,7 +6,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
-const formidableMiddleware = require('express-formidable');
+// const formidableMiddleware = require('express-formidable');
 
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
@@ -17,7 +17,7 @@ const AppError = require("./utils/appError");
 const app = express();
 
 // middlewares
-app.use(formidableMiddleware());
+// app.use(formidableMiddleware());
 
 // admin bro
 app.use(adminBroConfig.adminBro.options.rootPath, adminBroConfig.adminBroRouter);

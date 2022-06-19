@@ -42,7 +42,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     "email",
     "country",
     "language",
-    "savedTopics"
+    "savedTopics",
+    "photo"
   );
 
   // Update user document

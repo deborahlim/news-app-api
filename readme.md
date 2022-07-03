@@ -1,43 +1,45 @@
-Context
- 
+## Context
 RESTful API using Express and Mongo DB for a news web application 
-A link to the API can be found here:
-A GitHub link to the React Frontend can be found here:
+Admin Bro Interface Link:
+API GitHub Link: 
+GitHub link to the React Frontend:
 
-Database Structure
+## API Endpoints
 
-Users collection
 
-handle authentication and authorization
-CRUD for users
-Differentiation of content for users
-Restriction of actions available for users
+## MongoDB Users Collection 
+- handle authentication and authorization
+- CRUD for users
+- Differentiation of content for users
+- Restriction of actions available for users
 
-Technologies Used:
-Admin bro (basic admin interface)
 
-Database
-Mongo DB
-Mongoose
-validator
+## Technology Used
+### Database
+- Mongo DB
+- Mongoose
+- Validator
 
-Web Server
-Express
-Express Router
+### Web Server
+- Express
+- Express Router
 
-Security
-Cors
-Dotenv
-helmet
-hpp
-xss-clean
+### Security
+- Cors
+- Dotenv
+- helmet
+- hpp
+- xss-clean
 
-Authentication 
-jsonwebtoken
-bcrypt
-nodemailer
+### Authentication 
+- jsonwebtoken
+- bcrypt
+- nodemailer
 
-Development
-Morgan
-slugify
-nodemon
+### Development
+- Morgan
+- slugify
+- nodemon
+
+### Others
+AdminBro

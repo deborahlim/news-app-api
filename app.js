@@ -10,7 +10,7 @@ const hpp = require("hpp");
 
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
-const adminBroConfig = require("./routes/adminBroConfig");
+const adminJsConfig = require("./routes/adminJsConfig");
 const AppError = require("./utils/appError");
 
 // start express app
@@ -19,13 +19,13 @@ const app = express();
 // middlewares
 // app.use(formidableMiddleware());
 
-// admin bro
-app.use(adminBroConfig.adminBro.options.rootPath, adminBroConfig.adminBroRouter);
+// admin JS
+app.use(adminJsConfig.adminJs.options.rootPath, adminJsConfig.adminJsRouter);
 
 app.use(cors());
 
-// set security HTTP headers add unsafe directives so admin bro can run inline script
-// https://github.com/SoftwareBrothers/adminjs/issues/607
+// set security HTTP headers add unsafe directives so admin Js can run inline script
+// https://github.com/SoftwareJsthers/adminjs/issues/607
 app.use(helmet({
   contentSecurityPolicy: {
       directives: {

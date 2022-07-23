@@ -10,7 +10,7 @@ const hpp = require("hpp");
 
 const globalErrorHandler = require("./controllers/errorController");
 const userRouter = require("./routes/userRoutes");
-const adminJsConfig = require("./routes/adminJsConfig");
+const adminJsConfig = require("./adminjs/adminJsConfig");
 const AppError = require("./utils/appError");
 
 // start express app

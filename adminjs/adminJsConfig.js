@@ -41,7 +41,6 @@ const userResourceOptions = {
     new: {
       isAccessible: canModifyUsers,
       before: async (request) => {
-        console.dir(request.payload);
         if (request.payload.password) {
           request.payload = {
             ...request.payload,
@@ -54,7 +53,6 @@ const userResourceOptions = {
     edit: {
       isAccessible: canModifyUsers,
       before: async (request) => {
-        console.dir(request.payload);
         if (request.payload.password) {
           request.payload = {
             ...request.payload,

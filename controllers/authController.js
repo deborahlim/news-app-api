@@ -22,11 +22,13 @@ const createSendToken = (user, statusCode, res) => {
   // only want to store the new user's id in the payload
   const token = signToken(user._id);
   const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true
-  }
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
 
-  if(process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
   res.cookie("jwt", token, cookieOptions);
 
@@ -52,19 +54,19 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    photo: req.body?.photo,
   });
-  
+
   createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  console.log("LOGINNNNN");
-  let { email, password } = req.body;
+  let { email, password, photo, googleAuthUser } = req.body;
   // check if email and password exists
   if (!email || !password) {
     return next(new AppError("Please provide email and password!", 400));
   }
-  console.log(email, password);
+
   // check if user exists && password is correct
   // use +password to explicitly select password field which was set by default as false
   let user = await User.findOne({ email }).select("+password");
@@ -79,12 +81,25 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // if correct password do not execute the error middleware
   // only if wrong password execute the error middleware
-  console.log(user);
   if (!user || !(await user.correctPassword(password, user.password))) {
     // 401 means unauthorized
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  // update photo if photo is different for google auth users
+  if (googleAuthUser && photo !== user.photo) {
+    console.log("Photo is different");
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { photo: photo },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return createSendToken(updatedUser, 200, res);
+  }
   // if all good, send token to client
   createSendToken(user, 200, res);
 });

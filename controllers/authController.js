@@ -187,9 +187,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   // use try catch block because we want to do more than send error response to the client
   try {
     // send it to user's email
-    const resetURL = `${req.protocol}://${req.get(
-      "host"
-    )}/users/resetPassword/${resetToken}`;
+    const resetURL = `${process.env.REACT_URL}/reset-password/${resetToken}`;
     console.log(resetURL);
     await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
@@ -227,8 +225,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
-  // log the user in, send JWT
-  createSendToken(user, 200, res);
+  res.status(200).json({
+    status: "success",
+    message: "Your password has been successfully reset"
+  });
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {

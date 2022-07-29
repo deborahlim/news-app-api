@@ -1,11 +1,10 @@
 const crypto = require("crypto");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
-const sendEmail = require("../utils/email");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const User = require("../models/userModel");
-
+const Email = require("../utils/email");
 const signToken = (id) => {
   return jwt.sign(
     {
@@ -182,23 +181,17 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   // turn off validation checks for confirm password field
   await user.save({ validateBeforeSave: false });
-  // send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/users/resetPassword/${resetToken}`;
-  console.log(resetURL);
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to : ${resetURL}.\n
-  If you didn't forget your password, please ignore this email!`;
 
   // DO NOT SEND THE RESET TOKEN IN THE JSON RESPONSE
   // RESET TOKEN SHOULD ONLY BE SENT TO THE USER'S EMAIL
   // use try catch block because we want to do more than send error response to the client
   try {
-    await sendEmail({
-      email: user.email,
-      subject: "Your password reset token (valid for 10 min)",
-      message,
-    });
+    // send it to user's email
+    const resetURL = `${req.protocol}://${req.get(
+      "host"
+    )}/users/resetPassword/${resetToken}`;
+    console.log(resetURL);
+    await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: "success",
       message: "Token sent to email",
